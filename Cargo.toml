@@ -1,0 +1,21 @@
+[package]
+name = "dpc-simplemap"
+version = "0.0.1"
+authors = ["Dawid Ciężarkiewicz <dpc@dpc.pw>"]
+description = "Simple map with default value and compacting."
+keywords = ["data", "map", "default", "compact"]
+version = "0.0.1"
+authors = ["Dawid Ciężarkiewicz <dpc@dpc.pw>"]
+license = "MPL-2.0"
+documentation = "https://dpc.github.io/simplemap-rs/"
+homepage = "https://github.com/dpc/simplemap-rs"
+repository = "https://github.com/dpc/simplemap-rs"
+readme = "README.md"
+license-file = "LICENSE-MPL"
+
+[lib]
+name = "simplemap"
+path = "src/lib.rs"
+
+[dev-dependencies]
+rand = "*"
