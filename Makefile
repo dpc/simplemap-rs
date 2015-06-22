@@ -1,4 +1,4 @@
-PKG_NAME=map
+PKG_NAME=simplemap
 DEFAULT_TARGET=build
 
 default: $(DEFAULT_TARGET)

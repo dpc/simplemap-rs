@@ -15,7 +15,7 @@
 
 ## Introduction
 
-Simple Map with default value for missing values, and compacting (removal of default values from underlying map).
+Simple Map with default for missing values and compacting (removal of default values from underlying map).
 
 ## Usage
 

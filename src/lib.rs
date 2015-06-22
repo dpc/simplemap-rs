@@ -1,7 +1,25 @@
-#![cfg_attr(test, feature(test))]
+// Copyright 2015 Dawid Ciężarkiewicz
+// See LICENSE-MPL
+//! Simple Map with default for missing values and compacting (removal of
+//! default values from underlying map).
+//!
+//! So you can just:
+//!
+//! ```
+//! use simplemap::SimpleMap;
+//!
+//! let mut map = SimpleMap::new();
+//!
+//! assert_eq!(map[0u32], 0u32);
+//! map[1] = 3;
+//! assert_eq!(map[1], 3);
+//! ```
 
-#[cfg(test)]
+#![cfg_attr(all(test, feature="bench"), feature(test))]
+
+#[cfg(all(test, feature="bench"))]
 extern crate test;
+
 #[cfg(test)]
 extern crate rand;
 
@@ -26,8 +44,6 @@ T : Clone+Eq+Default {
         }
     }
 }
-
-
 
 impl<Idx, T> SimpleMap<Idx, T>
 where Idx : Ord+Clone,
@@ -56,6 +72,14 @@ T : Clone+Eq {
     }
 }
 
+/// ```
+/// use simplemap::SimpleMap;
+///
+/// let mut map = SimpleMap::new();
+///
+/// let val : u32 = map[0u32];
+/// assert_eq!(val, 0);
+/// ```
 impl<Idx, T> Index<Idx> for SimpleMap<Idx, T>
 where Idx : Ord {
     type Output = T;
@@ -77,6 +101,14 @@ where Idx : Ord {
     }
 }
 
+/// ```
+/// use simplemap::SimpleMap;
+///
+/// let mut map = SimpleMap::new();
+///
+/// map[1u32] = 3i32;
+/// assert_eq!(map[1], 3);
+/// ```
 impl<Idx, T> IndexMut<Idx> for SimpleMap<Idx, T>
 where
 Idx : Ord+Clone,
@@ -101,9 +133,7 @@ T : Clone+Eq {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use test::Bencher;
-    use test;
+    pub use super::*;
     use rand;
     use std::collections::BTreeMap;
     use rand::Rng;
@@ -114,57 +144,64 @@ mod tests {
         assert_eq!(map[1u32], 5u32);
     }
 
-    #[bench]
-    fn normal_btreemap_insert(b : &mut Bencher) {
-        let mut map = BTreeMap::new();
+#[cfg(feature="bench")]
+    mod bench {
+        use std::collections::BTreeMap;
+        use super::*;
+        use test::Bencher;
+        use test;
+#[bench]
+        fn normal_btreemap_insert(b : &mut Bencher) {
+            let mut map = BTreeMap::new();
 
-        let mut i = 0u32;
-        b.iter(|| {
-            map.insert(i, i);
-            i = i.wrapping_add(i);
-        });
-    }
-
-    #[bench]
-    fn normal_btreemap_get(b : &mut Bencher) {
-        let mut map = BTreeMap::new();
-
-        for i in 0u32..10000 {
-            map.insert(i, i);
+            let mut i = 0u32;
+            b.iter(|| {
+                map.insert(i, i);
+                i = i.wrapping_add(i);
+            });
         }
 
-        let mut i = 0u32;
-        b.iter(|| {
-            test::black_box(map.get(&i));
-            i = i.wrapping_add(i);
-        });
-    }
+#[bench]
+        fn normal_btreemap_get(b : &mut Bencher) {
+            let mut map = BTreeMap::new();
 
+            for i in 0u32..10000 {
+                map.insert(i, i);
+            }
 
-    #[bench]
-    fn compact_map_idx_assign(b : &mut Bencher) {
-        let mut map = SimpleMap::new();
-
-        let mut i = 0u32;
-        b.iter(|| {
-            map[i] = i;
-            i = i.wrapping_add(i);
-        });
-    }
-
-    #[bench]
-    fn compact_map_idx_get(b : &mut Bencher) {
-        let mut map = SimpleMap::new();
-
-        for i in 0u32..10000 {
-            map[i] = i;
+            let mut i = 0u32;
+            b.iter(|| {
+                test::black_box(map.get(&i));
+                i = i.wrapping_add(i);
+            });
         }
 
-        let mut i = 0u32;
-        b.iter(|| {
-            test::black_box(map[i]);
-            i = i.wrapping_add(i);
-        });
+#[bench]
+        fn compact_map_idx_assign(b : &mut Bencher) {
+            let mut map = SimpleMap::new();
+
+            let mut i = 0u32;
+            b.iter(|| {
+                map[i] = i;
+                i = i.wrapping_add(i);
+            });
+        }
+
+#[bench]
+        fn compact_map_idx_get(b : &mut Bencher) {
+            let mut map = SimpleMap::new();
+
+            for i in 0u32..10000 {
+                map[i] = i;
+            }
+
+            let mut i = 0u32;
+            b.iter(|| {
+                test::black_box(map[i]);
+                i = i.wrapping_add(i);
+            });
+        }
+
     }
 
     #[test]
