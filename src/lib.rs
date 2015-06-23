@@ -210,6 +210,16 @@ mod tests {
         }
     }
 
+    #[test]
+    fn strings() {
+        let mut smap = SimpleMap::new();
+
+        smap["one"] = 1u32;
+        smap["two"] = 2u32;
+
+        assert_eq!(smap["zero"], 0u32);
+    }
+
 #[cfg(feature="bench")]
     mod bench {
         use std::collections::BTreeMap;
