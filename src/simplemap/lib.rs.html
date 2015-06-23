@@ -309,11 +309,23 @@
 <span id="267">267</span>
 <span id="268">268</span>
 <span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 Dawid Ciężarkiewicz</span>
 <span class='comment'>// See LICENSE-MPL</span>
 <span class='doccomment'>//! Simple Map with default for missing values and compacting (removal of</span>
-<span class='doccomment'>//! default values from underlying map).</span>
+<span class='doccomment'>//! elements with default value from underlying map).</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! So you can just:</span>
 <span class='doccomment'>//!</span>
@@ -343,7 +355,7 @@
 <span class='doccomment'>/// SimpleMap</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Simple Map with default for missing values and compacting (removal of</span>
-<span class='doccomment'>/// default values from underlying map).</span>
+<span class='doccomment'>/// elements with default value from underlying map).</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='ident'>map</span> : <span class='ident'>BTreeMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>,
     <span class='ident'>default</span> : <span class='ident'>T</span>,
@@ -354,6 +366,8 @@
 <span class='kw'>where</span> <span class='ident'>Idx</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
 <span class='ident'>T</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span><span class='op'>+</span><span class='ident'>Default</span> {
     <span class='doccomment'>/// Create a `SimpleMap`.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// `Default::default()` will be used as a default value.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='ident'>SimpleMap</span> {
             <span class='ident'>map</span> : <span class='ident'>BTreeMap</span>::<span class='ident'>new</span>(),
@@ -518,6 +532,16 @@
             <span class='ident'>bmap</span>.<span class='ident'>insert</span>(<span class='ident'>idx</span>, <span class='ident'>val</span>);
             <span class='ident'>smap</span>[<span class='ident'>idx</span>] <span class='op'>=</span> <span class='ident'>val</span>;
         }
+    }
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>strings</span>() {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>smap</span> <span class='op'>=</span> <span class='ident'>SimpleMap</span>::<span class='ident'>new</span>();
+
+        <span class='ident'>smap</span>[<span class='string'>&quot;one&quot;</span>] <span class='op'>=</span> <span class='number'>1u32</span>;
+        <span class='ident'>smap</span>[<span class='string'>&quot;two&quot;</span>] <span class='op'>=</span> <span class='number'>2u32</span>;
+
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>smap</span>[<span class='string'>&quot;zero&quot;</span>], <span class='number'>0u32</span>);
     }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;bench&quot;</span>)]</span>
