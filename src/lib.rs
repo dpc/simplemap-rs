@@ -26,6 +26,7 @@ extern crate rand;
 use std::ops::{Index, IndexMut};
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
+use std::iter::Chain;
 
 pub struct SimpleMap<Idx, T> {
     map : BTreeMap<Idx, T>,
@@ -70,6 +71,22 @@ T : Clone+Eq {
        }
        self.pending = None;
     }
+
+    pub fn iter<'a>(&'a self) -> Chain<std::collections::btree_map::Iter<'a, Idx, T>, std::iter::Map<std::option::Iter<'a, (Idx, T)>, fn(&'a (Idx, T)) -> (&'a Idx, &'a T)>>
+    {
+        let SimpleMap {
+            ref map,
+            ref pending,
+            ..
+        } = *self;
+
+        map.iter().chain(pending.iter().map(ref_to_touple_to_touple_of_refs))
+    }
+}
+
+fn ref_to_touple_to_touple_of_refs<'a, Idx, T>(t : &'a(Idx, T)) -> (&'a Idx, &'a T) {
+    let &(ref i, ref t) = t;
+    (i, t)
 }
 
 /// ```
@@ -144,6 +161,39 @@ mod tests {
         assert_eq!(map[1u32], 5u32);
     }
 
+    #[test]
+    fn iter() {
+        let mut map = SimpleMap::new();
+
+        map[0u32] = 3i32; // counts
+        map[1u32] = 0i32; // default, doesn't count
+        map[2u32] = 2i32; // counts
+        map[0u32] = 2i32; // replaces the existing one
+        let _ = map[0u32]; // shouldn't change anything
+
+        let collect : Vec<(u32, i32)> = map.iter().collect();
+        println!("{:?}", collect);
+
+        assert_eq!(map.iter().count(), 2);
+    }
+
+    #[test]
+    fn random() {
+        let mut bmap = BTreeMap::new();
+        let mut smap = SimpleMap::new();
+
+        let mut rng = rand::thread_rng();
+
+        for val in 0u32..10000 {
+            let idx = rng.gen_range(-5i32, 5);
+            let bval = *bmap.get(&idx).unwrap_or(&Default::default());
+            let sval = smap[idx];
+            assert_eq!(bval, sval);
+            bmap.insert(idx, val);
+            smap[idx] = val;
+        }
+    }
+
 #[cfg(feature="bench")]
     mod bench {
         use std::collections::BTreeMap;
@@ -202,22 +252,5 @@ mod tests {
             });
         }
 
-    }
-
-    #[test]
-    fn random() {
-        let mut bmap = BTreeMap::new();
-        let mut smap = SimpleMap::new();
-
-        let mut rng = rand::thread_rng();
-
-        for val in 0u32..10000 {
-            let idx = rng.gen_range(-5i32, 5);
-            let bval = *bmap.get(&idx).unwrap_or(&Default::default());
-            let sval = smap[idx];
-            assert_eq!(bval, sval);
-            bmap.insert(idx, val);
-            smap[idx] = val;
-        }
     }
 }
