@@ -7,9 +7,3 @@ env:
   - DOCS_DEFAULT_MODULE=simplemap
 script:
   - make test doc bench
-after_success: |
-  cargo doc \
-  && echo '<meta http-equiv="refresh" content="0;url='${DOCS_DEFAULT_MODULE}'/index.html">' > target/doc/index.html && \
-  sudo pip install ghp-import && \
-  ghp-import -n target/doc && \
-  git push -qf "https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git" gh-pages
