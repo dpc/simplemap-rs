@@ -1,7 +1,7 @@
 // Copyright 2015 Dawid Ciężarkiewicz
 // See LICENSE-MPL
 //! Simple Map with default for missing values and compacting (removal of
-//! default values from underlying map).
+//! elements with default value from underlying map).
 //!
 //! So you can just:
 //!
@@ -31,7 +31,7 @@ use std::iter::Chain;
 /// SimpleMap
 ///
 /// Simple Map with default for missing values and compacting (removal of
-/// default values from underlying map).
+/// elements with default value from underlying map).
 pub struct SimpleMap<Idx, T> {
     map : BTreeMap<Idx, T>,
     default : T,
@@ -42,6 +42,8 @@ impl<Idx, T> SimpleMap<Idx, T>
 where Idx : Ord+Clone,
 T : Clone+Eq+Default {
     /// Create a `SimpleMap`.
+    ///
+    /// `Default::default()` will be used as a default value.
     pub fn new() -> SimpleMap<Idx, T> {
         SimpleMap {
             map : BTreeMap::new(),
