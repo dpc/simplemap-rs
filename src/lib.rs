@@ -32,6 +32,7 @@ use std::iter::Chain;
 ///
 /// Simple Map with default for missing values and compacting (removal of
 /// elements with default value from underlying map).
+#[derive(Clone)]
 pub struct SimpleMap<Idx, T> {
     map : BTreeMap<Idx, T>,
     default : T,
@@ -102,9 +103,51 @@ T : Clone+Eq {
     }
 }
 
+impl<Idx, T> SimpleMap<Idx, T>
+where Idx : Ord+Clone,
+T : Clone+Eq {
+    /// Iterator yielding (Idx, T) instead of (&Idx, &T)
+    pub fn iter_cloned<'a>(&'a self) ->
+        Chain<
+            std::iter::Map<std::collections::btree_map::Iter<'a, Idx, T>, fn((&'a Idx, &'a T)) -> (Idx, T)>,
+            std::iter::Cloned<std::option::Iter<'a, (Idx, T)>>
+        >
+    {
+        let SimpleMap {
+            ref map,
+            ref pending,
+            ..
+        } = *self;
+
+        let f: fn((&'a Idx, &'a T)) -> (Idx, T) = tuple_of_refs_to_tuple;
+
+        map.iter().map(f).chain(pending.iter().cloned())
+    }
+
+}
+
 fn ref_to_touple_to_touple_of_refs<'a, Idx, T>(t : &'a(Idx, T)) -> (&'a Idx, &'a T) {
     let &(ref i, ref t) = t;
     (i, t)
+}
+
+fn tuple_of_refs_to_tuple<'a, Idx : Clone, T : Clone>(t : (&'a Idx, &'a T)) -> (Idx, T) {
+    let (i, t) = t;
+    (i.clone(), t.clone())
+}
+
+use std::iter::FromIterator;
+use std::iter::IntoIterator;
+
+impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord, V: Default {
+    fn from_iter<T>(iterator: T) -> SimpleMap<K, V>
+        where T: IntoIterator<Item=(K, V)> {
+            SimpleMap {
+                default: Default::default(),
+                map: FromIterator::from_iter(iterator),
+                pending: None,
+            }
+    }
 }
 
 /// ```
