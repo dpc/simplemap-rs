@@ -33,19 +33,19 @@ use std::iter::Chain;
 /// Simple Map with default for missing values and compacting (removal of
 /// elements with default value from underlying map).
 #[derive(Clone)]
-pub struct SimpleMap<Idx, T> {
-    map : BTreeMap<Idx, T>,
-    default : T,
-    pending : Option<(Idx, T)>
+pub struct SimpleMap<K, V> {
+    map : BTreeMap<K, V>,
+    default : V,
+    pending : Option<(K, V)>
 }
 
-impl<Idx, T> SimpleMap<Idx, T>
-where Idx : Ord+Clone,
-T : Clone+Eq+Default {
+impl<K, V> SimpleMap<K, V>
+where K : Ord+Clone,
+V : Clone+Eq+Default {
     /// Create a `SimpleMap`.
     ///
     /// `Default::default()` will be used as a default value.
-    pub fn new() -> SimpleMap<Idx, T> {
+    pub fn new() -> SimpleMap<K, V> {
         SimpleMap {
             map : BTreeMap::new(),
             default: Default::default(),
@@ -54,11 +54,11 @@ T : Clone+Eq+Default {
     }
 }
 
-impl<Idx, T> SimpleMap<Idx, T>
-where Idx : Ord+Clone,
-T : Clone+Eq {
+impl<K, V> SimpleMap<K, V>
+where K : Ord+Clone,
+V : Clone+Eq {
     /// Create a `SimpleMap` with custom default value.
-    pub fn new_with_default(default : T) -> SimpleMap<Idx, T> {
+    pub fn new_with_default(default : V) -> SimpleMap<K, V> {
         SimpleMap {
             map : BTreeMap::new(),
             default: default,
@@ -90,27 +90,27 @@ T : Clone+Eq {
     ///
     /// Note: It might return elements with default value, unless `compact`
     /// is called before `iter()`.
-    pub fn iter<'a>(&'a self) -> Chain<std::collections::btree_map::Iter<'a, Idx, T>, std::iter::Map<std::option::Iter<'a, (Idx, T)>, fn(&'a (Idx, T)) -> (&'a Idx, &'a T)>> {
+    pub fn iter<'a>(&'a self) -> Chain<std::collections::btree_map::Iter<'a, K, V>, std::iter::Map<std::option::Iter<'a, (K, V)>, fn(&'a (K, V)) -> (&'a K, &'a V)>> {
         let SimpleMap {
             ref map,
             ref pending,
             ..
         } = *self;
 
-        let f: fn(&'a (Idx, T)) -> (&'a Idx, &'a T) = ref_to_touple_to_touple_of_refs;
+        let f: fn(&'a (K, V)) -> (&'a K, &'a V) = ref_to_touple_to_touple_of_refs;
 
         map.iter().chain(pending.iter().map(f))
     }
 }
 
-impl<Idx, T> SimpleMap<Idx, T>
-where Idx : Ord+Clone,
-T : Clone+Eq {
-    /// Iterator yielding (Idx, T) instead of (&Idx, &T)
+impl<K, V> SimpleMap<K, V>
+where K : Ord+Clone,
+V : Clone+Eq {
+    /// Iterator yielding (K, V) instead of (&K, &V)
     pub fn iter_cloned<'a>(&'a self) ->
         Chain<
-            std::iter::Map<std::collections::btree_map::Iter<'a, Idx, T>, fn((&'a Idx, &'a T)) -> (Idx, T)>,
-            std::iter::Cloned<std::option::Iter<'a, (Idx, T)>>
+            std::iter::Map<std::collections::btree_map::Iter<'a, K, V>, fn((&'a K, &'a V)) -> (K, V)>,
+            std::iter::Cloned<std::option::Iter<'a, (K, V)>>
         >
     {
         let SimpleMap {
@@ -119,19 +119,19 @@ T : Clone+Eq {
             ..
         } = *self;
 
-        let f: fn((&'a Idx, &'a T)) -> (Idx, T) = tuple_of_refs_to_tuple;
+        let f: fn((&'a K, &'a V)) -> (K, V) = tuple_of_refs_to_tuple;
 
         map.iter().map(f).chain(pending.iter().cloned())
     }
 
 }
 
-fn ref_to_touple_to_touple_of_refs<'a, Idx, T>(t : &'a(Idx, T)) -> (&'a Idx, &'a T) {
+fn ref_to_touple_to_touple_of_refs<'a, K, V>(t : &'a(K, V)) -> (&'a K, &'a V) {
     let &(ref i, ref t) = t;
     (i, t)
 }
 
-fn tuple_of_refs_to_tuple<'a, Idx : Clone, T : Clone>(t : (&'a Idx, &'a T)) -> (Idx, T) {
+fn tuple_of_refs_to_tuple<'a, K : Clone, V : Clone>(t : (&'a K, &'a V)) -> (K, V) {
     let (i, t) = t;
     (i.clone(), t.clone())
 }
@@ -140,8 +140,8 @@ use std::iter::FromIterator;
 use std::iter::IntoIterator;
 
 impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord, V: Default {
-    fn from_iter<T>(iterator: T) -> SimpleMap<K, V>
-        where T: IntoIterator<Item=(K, V)> {
+    fn from_iter<I>(iterator: I) -> SimpleMap<K, V>
+        where I: IntoIterator<Item=(K, V)> {
             SimpleMap {
                 default: Default::default(),
                 map: FromIterator::from_iter(iterator),
@@ -158,10 +158,10 @@ impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord, V: Default {
 /// let val : u32 = map[0u32];
 /// assert_eq!(val, 0);
 /// ```
-impl<Idx, T> Index<Idx> for SimpleMap<Idx, T>
-where Idx : Ord {
-    type Output = T;
-    fn index<'a>(&'a self, index: Idx) -> &'a T {
+impl<K, V> Index<K> for SimpleMap<K, V>
+where K : Ord {
+    type Output = V;
+    fn index<'a>(&'a self, index: K) -> &'a V {
         match self.pending {
             Some(ref pending) => {
                let &(ref i, ref val) = pending;
@@ -187,11 +187,11 @@ where Idx : Ord {
 /// map[1u32] = 3i32;
 /// assert_eq!(map[1], 3);
 /// ```
-impl<Idx, T> IndexMut<Idx> for SimpleMap<Idx, T>
+impl<K, V> IndexMut<K> for SimpleMap<K, V>
 where
-Idx : Ord+Clone,
-T : Clone+Eq {
-    fn index_mut<'a>(&'a mut self, index: Idx) -> &'a mut T {
+K : Ord+Clone,
+V : Clone+Eq {
+    fn index_mut<'a>(&'a mut self, index: K) -> &'a mut V {
         self.apply_pending();
 
         match self.map.entry(index.clone()) {
