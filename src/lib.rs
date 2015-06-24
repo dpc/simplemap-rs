@@ -97,7 +97,7 @@ V : Clone+Eq {
             ..
         } = *self;
 
-        let f: fn(&'a (K, V)) -> (&'a K, &'a V) = ref_to_touple_to_touple_of_refs;
+        let f: fn(&'a (K, V)) -> (&'a K, &'a V) = ref_to_tuple_to_tuple_of_refs;
 
         map.iter().chain(pending.iter().map(f))
     }
@@ -126,7 +126,7 @@ V : Clone+Eq {
 
 }
 
-fn ref_to_touple_to_touple_of_refs<'a, K, V>(t : &'a(K, V)) -> (&'a K, &'a V) {
+fn ref_to_tuple_to_tuple_of_refs<'a, K, V>(t : &'a(K, V)) -> (&'a K, &'a V) {
     let &(ref i, ref t) = t;
     (i, t)
 }
