@@ -321,6 +321,49 @@
 <span id="279">279</span>
 <span id="280">280</span>
 <span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 Dawid Ciężarkiewicz</span>
 <span class='comment'>// See LICENSE-MPL</span>
@@ -356,19 +399,20 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Simple Map with default for missing values and compacting (removal of</span>
 <span class='doccomment'>/// elements with default value from underlying map).</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>map</span> : <span class='ident'>BTreeMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>,
-    <span class='ident'>default</span> : <span class='ident'>T</span>,
-    <span class='ident'>pending</span> : <span class='prelude-ty'>Option</span><span class='op'>&lt;</span>(<span class='ident'>Idx</span>, <span class='ident'>T</span>)<span class='op'>&gt;</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> {
+    <span class='ident'>map</span> : <span class='ident'>BTreeMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>,
+    <span class='ident'>default</span> : <span class='ident'>V</span>,
+    <span class='ident'>pending</span> : <span class='prelude-ty'>Option</span><span class='op'>&lt;</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span>
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
-<span class='kw'>where</span> <span class='ident'>Idx</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
-<span class='ident'>T</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span><span class='op'>+</span><span class='ident'>Default</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>
+<span class='kw'>where</span> <span class='ident'>K</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
+<span class='ident'>V</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span><span class='op'>+</span><span class='ident'>Default</span> {
     <span class='doccomment'>/// Create a `SimpleMap`.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// `Default::default()` will be used as a default value.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> {
         <span class='ident'>SimpleMap</span> {
             <span class='ident'>map</span> : <span class='ident'>BTreeMap</span>::<span class='ident'>new</span>(),
             <span class='ident'>default</span>: <span class='ident'>Default</span>::<span class='ident'>default</span>(),
@@ -377,11 +421,11 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
-<span class='kw'>where</span> <span class='ident'>Idx</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
-<span class='ident'>T</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>
+<span class='kw'>where</span> <span class='ident'>K</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
+<span class='ident'>V</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span> {
     <span class='doccomment'>/// Create a `SimpleMap` with custom default value.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_with_default</span>(<span class='ident'>default</span> : <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_with_default</span>(<span class='ident'>default</span> : <span class='ident'>V</span>) <span class='op'>-&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> {
         <span class='ident'>SimpleMap</span> {
             <span class='ident'>map</span> : <span class='ident'>BTreeMap</span>::<span class='ident'>new</span>(),
             <span class='ident'>default</span>: <span class='ident'>default</span>,
@@ -413,22 +457,64 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Note: It might return elements with default value, unless `compact`</span>
     <span class='doccomment'>/// is called before `iter()`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Chain</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>btree_map</span>::<span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Map</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>option</span>::<span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, (<span class='ident'>Idx</span>, <span class='ident'>T</span>)<span class='op'>&gt;</span>, <span class='kw'>fn</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> (<span class='ident'>Idx</span>, <span class='ident'>T</span>)) <span class='op'>-&gt;</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Idx</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span>)<span class='op'>&gt;&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Chain</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>btree_map</span>::<span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>, <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Map</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>option</span>::<span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, (<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span>, <span class='kw'>fn</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> (<span class='ident'>K</span>, <span class='ident'>V</span>)) <span class='op'>-&gt;</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span>)<span class='op'>&gt;&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>SimpleMap</span> {
             <span class='kw-2'>ref</span> <span class='ident'>map</span>,
             <span class='kw-2'>ref</span> <span class='ident'>pending</span>,
             ..
         } <span class='op'>=</span> <span class='op'>*</span><span class='self'>self</span>;
 
-        <span class='kw'>let</span> <span class='ident'>f</span>: <span class='kw'>fn</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> (<span class='ident'>Idx</span>, <span class='ident'>T</span>)) <span class='op'>-&gt;</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Idx</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span>) <span class='op'>=</span> <span class='ident'>ref_to_touple_to_touple_of_refs</span>;
+        <span class='kw'>let</span> <span class='ident'>f</span>: <span class='kw'>fn</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> (<span class='ident'>K</span>, <span class='ident'>V</span>)) <span class='op'>-&gt;</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span>) <span class='op'>=</span> <span class='ident'>ref_to_tuple_to_tuple_of_refs</span>;
 
         <span class='ident'>map</span>.<span class='ident'>iter</span>().<span class='ident'>chain</span>(<span class='ident'>pending</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='ident'>f</span>))
     }
 }
 
-<span class='kw'>fn</span> <span class='ident'>ref_to_touple_to_touple_of_refs</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>t</span> : <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span>(<span class='ident'>Idx</span>, <span class='ident'>T</span>)) <span class='op'>-&gt;</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Idx</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span>) {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>
+<span class='kw'>where</span> <span class='ident'>K</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
+<span class='ident'>V</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span> {
+    <span class='doccomment'>/// Iterator yielding (K, V) instead of (&amp;K, &amp;V)</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter_cloned</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span>
+        <span class='ident'>Chain</span><span class='op'>&lt;</span>
+            <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Map</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>btree_map</span>::<span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>, <span class='kw'>fn</span>((<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span>)) <span class='op'>-&gt;</span> (<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span>,
+            <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Cloned</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>option</span>::<span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, (<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;&gt;</span>
+        <span class='op'>&gt;</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>SimpleMap</span> {
+            <span class='kw-2'>ref</span> <span class='ident'>map</span>,
+            <span class='kw-2'>ref</span> <span class='ident'>pending</span>,
+            ..
+        } <span class='op'>=</span> <span class='op'>*</span><span class='self'>self</span>;
+
+        <span class='kw'>let</span> <span class='ident'>f</span>: <span class='kw'>fn</span>((<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span>)) <span class='op'>-&gt;</span> (<span class='ident'>K</span>, <span class='ident'>V</span>) <span class='op'>=</span> <span class='ident'>tuple_of_refs_to_tuple</span>;
+
+        <span class='ident'>map</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='ident'>f</span>).<span class='ident'>chain</span>(<span class='ident'>pending</span>.<span class='ident'>iter</span>().<span class='ident'>cloned</span>())
+    }
+
+}
+
+<span class='kw'>fn</span> <span class='ident'>ref_to_tuple_to_tuple_of_refs</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>(<span class='ident'>t</span> : <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)) <span class='op'>-&gt;</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span>) {
     <span class='kw'>let</span> <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>i</span>, <span class='kw-2'>ref</span> <span class='ident'>t</span>) <span class='op'>=</span> <span class='ident'>t</span>;
     (<span class='ident'>i</span>, <span class='ident'>t</span>)
+}
+
+<span class='kw'>fn</span> <span class='ident'>tuple_of_refs_to_tuple</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span> : <span class='ident'>Clone</span>, <span class='ident'>V</span> : <span class='ident'>Clone</span><span class='op'>&gt;</span>(<span class='ident'>t</span> : (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span>)) <span class='op'>-&gt;</span> (<span class='ident'>K</span>, <span class='ident'>V</span>) {
+    <span class='kw'>let</span> (<span class='ident'>i</span>, <span class='ident'>t</span>) <span class='op'>=</span> <span class='ident'>t</span>;
+    (<span class='ident'>i</span>.<span class='ident'>clone</span>(), <span class='ident'>t</span>.<span class='ident'>clone</span>())
+}
+
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>FromIterator</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>IntoIterator</span>;
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> <span class='ident'>FromIterator</span><span class='op'>&lt;</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>K</span>: <span class='ident'>Ord</span>, <span class='ident'>V</span>: <span class='ident'>Default</span> {
+    <span class='kw'>fn</span> <span class='ident'>from_iter</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='ident'>iterator</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span> {
+            <span class='ident'>SimpleMap</span> {
+                <span class='ident'>default</span>: <span class='ident'>Default</span>::<span class='ident'>default</span>(),
+                <span class='ident'>map</span>: <span class='ident'>FromIterator</span>::<span class='ident'>from_iter</span>(<span class='ident'>iterator</span>),
+                <span class='ident'>pending</span>: <span class='prelude-val'>None</span>,
+            }
+    }
 }
 
 <span class='doccomment'>/// ```</span>
@@ -439,10 +525,10 @@
 <span class='doccomment'>/// let val : u32 = map[0u32];</span>
 <span class='doccomment'>/// assert_eq!(val, 0);</span>
 <span class='doccomment'>/// ```</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>Idx</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
-<span class='kw'>where</span> <span class='ident'>Idx</span> : <span class='ident'>Ord</span> {
-    <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span>;
-    <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>Idx</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>K</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>
+<span class='kw'>where</span> <span class='ident'>K</span> : <span class='ident'>Ord</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>V</span>;
+    <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>K</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span> {
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>pending</span> {
             <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>pending</span>) <span class='op'>=&gt;</span> {
                <span class='kw'>let</span> <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>i</span>, <span class='kw-2'>ref</span> <span class='ident'>val</span>) <span class='op'>=</span> <span class='ident'>pending</span>;
@@ -468,11 +554,11 @@
 <span class='doccomment'>/// map[1u32] = 3i32;</span>
 <span class='doccomment'>/// assert_eq!(map[1], 3);</span>
 <span class='doccomment'>/// ```</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='ident'>Idx</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>Idx</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='ident'>K</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SimpleMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>
 <span class='kw'>where</span>
-<span class='ident'>Idx</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
-<span class='ident'>T</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span> {
-    <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>Idx</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
+<span class='ident'>K</span> : <span class='ident'>Ord</span><span class='op'>+</span><span class='ident'>Clone</span>,
+<span class='ident'>V</span> : <span class='ident'>Clone</span><span class='op'>+</span><span class='ident'>Eq</span> {
+    <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>K</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>V</span> {
         <span class='self'>self</span>.<span class='ident'>apply_pending</span>();
 
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>map</span>.<span class='ident'>entry</span>(<span class='ident'>index</span>.<span class='ident'>clone</span>()) {
