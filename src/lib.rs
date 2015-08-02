@@ -15,18 +15,25 @@
 //! assert_eq!(map[1], 3);
 //! ```
 
+#![feature(hashmap_hasher)]
+
 #![cfg_attr(all(test, feature="bench"), feature(test))]
 
 #[cfg(all(test, feature="bench"))]
 extern crate test;
+extern crate fnv;
+
 
 #[cfg(test)]
 extern crate rand;
 
 use std::ops::{Index, IndexMut};
-use std::collections::btree_map::Entry;
-use std::collections::BTreeMap;
+use std::collections::hash_map::Entry;
+use std::collections::HashMap;
+use std::collections::hash_state::{DefaultState};
 use std::iter::Chain;
+use std::hash::Hash;
+use fnv::FnvHasher;
 
 /// SimpleMap
 ///
@@ -34,20 +41,20 @@ use std::iter::Chain;
 /// elements with default value from underlying map).
 #[derive(Clone)]
 pub struct SimpleMap<K, V> {
-    map : BTreeMap<K, V>,
+    map : HashMap<K, V, DefaultState<FnvHasher>>,
     default : V,
     pending : Option<(K, V)>
 }
 
 impl<K, V> SimpleMap<K, V>
-where K : Ord+Clone,
+where K : Ord+Clone+Hash,
 V : Clone+Eq+Default {
     /// Create a `SimpleMap`.
     ///
     /// `Default::default()` will be used as a default value.
     pub fn new() -> SimpleMap<K, V> {
         SimpleMap {
-            map : BTreeMap::new(),
+            map : Default::default(),
             default: Default::default(),
             pending: None,
         }
@@ -55,12 +62,12 @@ V : Clone+Eq+Default {
 }
 
 impl<K, V> SimpleMap<K, V>
-where K : Ord+Clone,
+where K : Ord+Clone+Hash,
 V : Clone+Eq {
     /// Create a `SimpleMap` with custom default value.
     pub fn new_with_default(default : V) -> SimpleMap<K, V> {
         SimpleMap {
-            map : BTreeMap::new(),
+            map : Default::default(),
             default: default,
             pending: None,
         }
@@ -90,7 +97,7 @@ V : Clone+Eq {
     ///
     /// Note: It might return elements with default value, unless `compact`
     /// is called before `iter()`.
-    pub fn iter<'a>(&'a self) -> Chain<std::collections::btree_map::Iter<'a, K, V>, std::iter::Map<std::option::Iter<'a, (K, V)>, fn(&'a (K, V)) -> (&'a K, &'a V)>> {
+    pub fn iter<'a>(&'a self) -> Chain<std::collections::hash_map::Iter<'a, K, V>, std::iter::Map<std::option::Iter<'a, (K, V)>, fn(&'a (K, V)) -> (&'a K, &'a V)>> {
         let SimpleMap {
             ref map,
             ref pending,
@@ -104,12 +111,12 @@ V : Clone+Eq {
 }
 
 impl<K, V> SimpleMap<K, V>
-where K : Ord+Clone,
+where K : Ord+Clone+Hash,
 V : Clone+Eq {
     /// Iterator yielding (K, V) instead of (&K, &V)
     pub fn iter_cloned<'a>(&'a self) ->
         Chain<
-            std::iter::Map<std::collections::btree_map::Iter<'a, K, V>, fn((&'a K, &'a V)) -> (K, V)>,
+            std::iter::Map<std::collections::hash_map::Iter<'a, K, V>, fn((&'a K, &'a V)) -> (K, V)>,
             std::iter::Cloned<std::option::Iter<'a, (K, V)>>
         >
     {
@@ -139,7 +146,7 @@ fn tuple_of_refs_to_tuple<'a, K : Clone, V : Clone>(t : (&'a K, &'a V)) -> (K, V
 use std::iter::FromIterator;
 use std::iter::IntoIterator;
 
-impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord, V: Default {
+impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord+Hash, V: Default {
     fn from_iter<I>(iterator: I) -> SimpleMap<K, V>
         where I: IntoIterator<Item=(K, V)> {
             SimpleMap {
@@ -159,7 +166,7 @@ impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord, V: Default {
 /// assert_eq!(val, 0);
 /// ```
 impl<K, V> Index<K> for SimpleMap<K, V>
-where K : Ord {
+where K : Ord+Hash {
     type Output = V;
     fn index<'a>(&'a self, index: K) -> &'a V {
         match self.pending {
@@ -189,7 +196,7 @@ where K : Ord {
 /// ```
 impl<K, V> IndexMut<K> for SimpleMap<K, V>
 where
-K : Ord+Clone,
+K : Ord+Clone+Hash,
 V : Clone+Eq {
     fn index_mut<'a>(&'a mut self, index: K) -> &'a mut V {
         self.apply_pending();

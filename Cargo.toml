@@ -1,6 +1,6 @@
 [package]
 name = "dpc-simplemap"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Dawid Ciężarkiewicz <dpc@dpc.pw>"]
 description = "Simple map with default value and compacting."
 keywords = ["data", "map", "default", "compact"]
@@ -13,6 +13,9 @@ readme = "README.md"
 [lib]
 name = "simplemap"
 path = "src/lib.rs"
+
+[dependencies]
+fnv = "*"
 
 [dev-dependencies]
 rand = "*"
