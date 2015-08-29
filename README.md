@@ -7,7 +7,9 @@
   <a href="https://crates.io/crates/dpc-simplemap">
       <img src="http://meritbadge.herokuapp.com/dpc-simplemap?style=flat-square" alt="crates.io">
   </a>
-  <img src="https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square" alt="Gitter Chat">
+  <a href="https://gitter.im/dpc/dpc">
+      <img src="https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square" alt="Gitter Chat">
+  </a>
   <br>
   <strong><a href="//dpc.github.io/simplemap-rs/">Documentation</a></strong>
 </p>
