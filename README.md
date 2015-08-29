@@ -4,8 +4,8 @@
   <a href="https://travis-ci.org/dpc/simplemap-rs">
       <img src="https://img.shields.io/travis/dpc/simplemap-rs/master.svg?style=flat-square" alt="Build Status">
   </a>
-  <a href="https://crates.io/crates/simplemap">
-      <img src="http://meritbadge.herokuapp.com/simplemap?style=flat-square" alt="crates.io">
+  <a href="https://crates.io/crates/dpc-simplemap">
+      <img src="http://meritbadge.herokuapp.com/dpc-simplemap?style=flat-square" alt="crates.io">
   </a>
   <img src="https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square" alt="Gitter Chat">
   <br>
