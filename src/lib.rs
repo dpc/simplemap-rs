@@ -220,7 +220,9 @@ V : Clone+Eq {
 mod tests {
     pub use super::*;
     use rand;
-    use std::collections::BTreeMap;
+    use std::collections::HashMap;
+    use std::collections::hash_state::{DefaultState};
+    use fnv::FnvHasher;
     use rand::Rng;
 
     #[test]
@@ -245,7 +247,7 @@ mod tests {
 
     #[test]
     fn random() {
-        let mut bmap = BTreeMap::new();
+        let mut bmap : HashMap<_, _, DefaultState<FnvHasher>> = Default::default();
         let mut smap = SimpleMap::new();
 
         let mut rng = rand::thread_rng();
@@ -273,6 +275,9 @@ mod tests {
 #[cfg(feature="bench")]
     mod bench {
         use std::collections::BTreeMap;
+        use std::collections::HashMap;
+        use std::collections::hash_state::{DefaultState};
+        use fnv::FnvHasher;
         use super::*;
         use test::Bencher;
         use test;
@@ -301,6 +306,33 @@ mod tests {
                 i = i.wrapping_add(i);
             });
         }
+
+#[bench]
+        fn normal_hashmap_insert(b : &mut Bencher) {
+            let mut map : HashMap<_, _, DefaultState<FnvHasher>> = Default::default();
+
+            let mut i = 0u32;
+            b.iter(|| {
+                map.insert(i, i);
+                i = i.wrapping_add(i);
+            });
+        }
+
+#[bench]
+        fn normal_hashmap_get(b : &mut Bencher) {
+            let mut map : HashMap<_, _, DefaultState<FnvHasher>> = Default::default();
+
+            for i in 0u32..10000 {
+                map.insert(i, i);
+            }
+
+            let mut i = 0u32;
+            b.iter(|| {
+                test::black_box(map.get(&i));
+                i = i.wrapping_add(i);
+            });
+        }
+
 
 #[bench]
         fn compact_map_idx_assign(b : &mut Bencher) {

@@ -3,7 +3,16 @@ rust:
   - stable
   - beta
   - nightly
+
 env:
-  - DOCS_DEFAULT_MODULE=simplemap
+  matrix:
+    -
+    - RELEASE=true
+
+matrix:
+  allow_failures:
+    - rust: stable
+    - rust: beta
+
 script:
   - make test doc bench
