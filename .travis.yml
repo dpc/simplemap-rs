@@ -16,3 +16,4 @@ matrix:
 
 script:
   - make test doc bench
+  - make longtest

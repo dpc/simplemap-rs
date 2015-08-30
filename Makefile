@@ -30,6 +30,10 @@ run test build clean:
 bench:
 	cargo $@ $(filter-out --release,$(CARGO_FLAGS))
 
+.PHONY: longtest
+longtest:
+	for i in `seq 100`; do cargo test $(CARGO_FLAGS) || exit 1 ; done
+
 .PHONY: $(EXAMPLES)
 $(EXAMPLES):
 	cargo build --example $@ $(CARGO_FLAGS)
