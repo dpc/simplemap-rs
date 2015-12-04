@@ -293,6 +293,7 @@ mod tests {
     use std::collections::hash_state::{DefaultState};
     use fnv::FnvHasher;
     use rand::Rng;
+    use rand;
 
     #[test]
     fn default() {
