@@ -30,29 +30,31 @@ extern crate rand;
 use std::ops::{Index, IndexMut};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
-use std::collections::hash_state::{DefaultState};
+use std::collections::hash_state::{DefaultState, HashState};
 use std::iter::Chain;
 use std::hash::Hash;
 use fnv::FnvHasher;
+use std::fmt;
 
 /// SimpleMap
 ///
 /// Simple Map with default for missing values and compacting (removal of
 /// elements with default value from underlying map).
 #[derive(Clone)]
-pub struct SimpleMap<K, V> {
-    map : HashMap<K, V, DefaultState<FnvHasher>>,
+pub struct SimpleMap<K, V, S = DefaultState<FnvHasher>> {
+    map : HashMap<K, V, S>,
     default : V,
     pending : Option<(K, V)>
 }
 
 impl<K, V> SimpleMap<K, V>
 where K : Ord+Clone+Hash,
-V : Clone+Eq+Default {
+      V : Clone+Eq+Default,
+{
     /// Create a `SimpleMap`.
     ///
     /// `Default::default()` will be used as a default value.
-    pub fn new() -> SimpleMap<K, V> {
+    pub fn new() -> SimpleMap<K, V, DefaultState<FnvHasher>> {
         SimpleMap {
             map : Default::default(),
             default: Default::default(),
@@ -61,18 +63,58 @@ V : Clone+Eq+Default {
     }
 }
 
+impl<K, V, S> SimpleMap<K, V, S>
+where K : Ord+Clone+Hash,
+      V : Clone+Eq+Default,
+      S : HashState+Default
+{
+    /// Create a `SimpleMap`.
+    ///
+    /// `Default::default()` will be used as a default value.
+    pub fn with_hash_state(hash_state : S) -> SimpleMap<K, V, S> {
+        SimpleMap {
+            map : HashMap::with_hash_state(hash_state),
+            default: Default::default(),
+            pending: None,
+        }
+    }
+}
+
+
 impl<K, V> SimpleMap<K, V>
 where K : Ord+Clone+Hash,
-V : Clone+Eq {
+      V : Clone+Eq,
+{
     /// Create a `SimpleMap` with custom default value.
-    pub fn new_with_default(default : V) -> SimpleMap<K, V> {
+    pub fn new_with_default(default : V) -> SimpleMap<K, V, DefaultState<FnvHasher>> {
         SimpleMap {
             map : Default::default(),
             default: default,
             pending: None,
         }
     }
+}
 
+
+impl<K, V, S> SimpleMap<K, V, S>
+where K : Ord+Clone+Hash,
+      S : HashState+Default,
+      V : Clone+Eq,
+{
+    pub fn with_default_with_hash_state(default : V, hash_state: S) -> SimpleMap<K, V, S> {
+        SimpleMap {
+            map : HashMap::with_hash_state(hash_state),
+            default: default,
+            pending: None,
+        }
+    }
+}
+
+impl<K, V, S> SimpleMap<K, V, S>
+where K : Ord+Clone+Hash,
+      V : Clone+Eq,
+      S: HashState,
+{
     fn apply_pending(&mut self) {
        match self.pending {
            Some(ref pending) => {
@@ -110,9 +152,11 @@ V : Clone+Eq {
     }
 }
 
-impl<K, V> SimpleMap<K, V>
+impl<K, V, S> SimpleMap<K, V, S>
 where K : Ord+Clone+Hash,
-V : Clone+Eq {
+      S: HashState,
+      V : Clone+Eq,
+{
     /// Iterator yielding (K, V) instead of (&K, &V)
     pub fn iter_cloned<'a>(&'a self) ->
         Chain<
@@ -146,8 +190,10 @@ fn tuple_of_refs_to_tuple<'a, K : Clone, V : Clone>(t : (&'a K, &'a V)) -> (K, V
 use std::iter::FromIterator;
 use std::iter::IntoIterator;
 
-impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord+Hash, V: Default {
-    fn from_iter<I>(iterator: I) -> SimpleMap<K, V>
+impl<K, V, S> FromIterator<(K, V)> for SimpleMap<K, V, S>
+where K: Ord+Hash, V: Default,
+      S: HashState+Default {
+    fn from_iter<I>(iterator: I) -> SimpleMap<K, V, S>
         where I: IntoIterator<Item=(K, V)> {
             SimpleMap {
                 default: Default::default(),
@@ -165,8 +211,10 @@ impl<K, V> FromIterator<(K, V)> for SimpleMap<K, V> where K: Ord+Hash, V: Defaul
 /// let val : u32 = map[0u32];
 /// assert_eq!(val, 0);
 /// ```
-impl<K, V> Index<K> for SimpleMap<K, V>
-where K : Ord+Hash {
+impl<K, V, S> Index<K> for SimpleMap<K, V, S>
+where K : Ord+Hash,
+      S : HashState+Default,
+{
     type Output = V;
     fn index<'a>(&'a self, index: K) -> &'a V {
         match self.pending {
@@ -194,10 +242,12 @@ where K : Ord+Hash {
 /// map[1u32] = 3i32;
 /// assert_eq!(map[1], 3);
 /// ```
-impl<K, V> IndexMut<K> for SimpleMap<K, V>
+impl<K, V, S> IndexMut<K> for SimpleMap<K, V, S>
 where
 K : Ord+Clone+Hash,
-V : Clone+Eq {
+V : Clone+Eq,
+      S : HashState+Default,
+{
     fn index_mut<'a>(&'a mut self, index: K) -> &'a mut V {
         self.apply_pending();
 
@@ -216,10 +266,29 @@ V : Clone+Eq {
     }
 }
 
+impl<K, V, S> fmt::Debug for SimpleMap<K, V, S>
+where K : Ord+Eq+Clone+Hash+fmt::Debug,
+      V : Clone+Eq+fmt::Debug,
+      S: HashState,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_map().entries(self.iter()).finish()
+    }
+}
+
+impl<K, V> Default for SimpleMap<K, V>
+where K : Ord+Clone+Hash,
+      V : Clone+Eq+Default,
+{
+     fn default() -> Self {
+         SimpleMap::with_default_with_hash_state(Default::default(), Default::default())
+     }
+}
+
+
 #[cfg(test)]
 mod tests {
     pub use super::*;
-    use rand;
     use std::collections::HashMap;
     use std::collections::hash_state::{DefaultState};
     use fnv::FnvHasher;
