@@ -1,13 +1,12 @@
 PKG_NAME=simplemap
 DOCS_DEFAULT_MODULE=simplemap
+ifeq (, $(shell which cargo-check 2> /dev/null))
 DEFAULT_TARGET=build
-EXAMPLES =
+else
+DEFAULT_TARGET=check
+endif
 
 default: $(DEFAULT_TARGET)
-
-ifeq ($(TRAVIS_RUST_VERSION),nightly)
-CARGO_FLAGS += --features bench
-endif
 
 # Mostly generic part goes below
 
@@ -17,13 +16,19 @@ CARGO_FLAGS += --release
 ALL_TARGETS += build test bench $(EXAMPLES)
 else
 $(info DEBUG BUILD; use `RELEASE=true make [args]` for release build)
-ALL_TARGETS += build test $(EXAMPLES)
+ALL_TARGETS += build $(EXAMPLES) test
 endif
+
+EXAMPLES = $(shell cd examples 2>/dev/null && ls *.rs 2>/dev/null | sed -e 's/.rs$$//g' )
 
 all: $(ALL_TARGETS)
 
 .PHONY: run test build doc clean
 run test build clean:
+	cargo $@ $(CARGO_FLAGS)
+
+check:
+	$(info Running check; use `make build` to actually build)
 	cargo $@ $(CARGO_FLAGS)
 
 .PHONY: bench
@@ -32,17 +37,18 @@ bench:
 
 .PHONY: longtest
 longtest:
-	for i in `seq 100`; do cargo test $(CARGO_FLAGS) || exit 1 ; done
+	for i in `seq 10`; do cargo test $(CARGO_FLAGS) || exit 1 ; done
 
 .PHONY: $(EXAMPLES)
 $(EXAMPLES):
 	cargo build --example $@ $(CARGO_FLAGS)
 
-.PHONY: doc
-doc:
-	cargo doc
+doc: FORCE
+	cp src/lib.rs src/lib.rs.orig
+	sed -i -e '/\/\/ MAKE_DOC_REPLACEME/{ r examples/echo.rs' -e 'd  }' src/lib.rs
+	-cargo doc
+	mv src/lib.rs.orig src/lib.rs
 
-.PHONY: publishdoc
 publishdoc: doc
 	echo '<meta http-equiv="refresh" content="0;url='${DOCS_DEFAULT_MODULE}'/index.html">' > target/doc/index.html
 	ghp-import -n target/doc
