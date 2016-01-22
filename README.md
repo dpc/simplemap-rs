@@ -21,7 +21,7 @@ Simple Map with default for missing values and compacting (removal of default va
 
 ## Usage
 
-Simplemap version 0.0.2 compiles only with Rust nightly. If you want stable-compatibility, stick with version 0.0.1.
+Simplemap version 0.0.2 compiles only with Rust nightly. If you want stable-compatibility use `no_hash_state` branch.
 
 In `Carto.toml`
 
