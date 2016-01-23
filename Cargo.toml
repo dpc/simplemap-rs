@@ -14,9 +14,6 @@ readme = "README.md"
 name = "simplemap"
 path = "src/lib.rs"
 
-[dependencies]
-fnv = "*"
-
 [dev-dependencies]
 rand = "*"
 
