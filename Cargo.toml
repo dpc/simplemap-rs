@@ -1,6 +1,6 @@
 [package]
 name = "dpc-simplemap"
-version = "0.0.3"
+version = "0.1.0"
 authors = ["Dawid Ciężarkiewicz <dpc@dpc.pw>"]
 description = "Simple map with default value and compacting."
 keywords = ["data", "map", "default", "compact"]

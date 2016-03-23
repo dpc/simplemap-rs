@@ -9,11 +9,6 @@ env:
     -
     - RELEASE=true
 
-matrix:
-  allow_failures:
-    - rust: stable
-    - rust: beta
-
 script:
   - make test doc bench
   - make longtest
