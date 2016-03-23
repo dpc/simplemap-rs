@@ -15,10 +15,10 @@ name = "simplemap"
 path = "src/lib.rs"
 
 [dependencies]
-fnv = "*"
+fnv = "1.0.2"
 
 [dev-dependencies]
-rand = "*"
+rand = "0.3.14"
 
 [features]
 
